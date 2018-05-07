@@ -72,7 +72,8 @@ if ($tg_user !== false) {
 <p class="desc">With this tool, you can manage your Record Library. Also you have access to your friends library</p>
 <h2>Your records <a href="new.php"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a></h2>
 <?php
-	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id']), true);
+	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
+	echo '<div class="card-deck">';
 	foreach($my_records['userAlbums'] as $record){
 		$artist = $record['artist'];
 		$album = $record['album_title'];
@@ -82,7 +83,7 @@ if ($tg_user !== false) {
 			
 		$last_album = json_decode(getCall($config->lastfm['api_root'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&album=" . $album . "&artist=" . $artist . "&format=json"), true);
 	} else {
-			$last_album = json_decode(getCall($config->lastfm['api_url'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&mbid=" . $mbid ."&format=json"),true);
+			$last_album = json_decode(getCall($config->lastfm['api_root'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&mbid=" . $mbid ."&format=json"),true);
 		}
 		
 		for ($i=0; $i < count($last_album['album']['image']); $i++) { 
@@ -93,7 +94,7 @@ if ($tg_user !== false) {
             }
           }
 ?>
-<div class="card" style="width: 18rem;">
+<div class="card" style="">
   <img class="card-img-top" src="<?php echo $largeImg ?>" alt="Card image cap">
   <div class="card-body">
     <h5 class="card-title"><?php echo $last_album['album']['artist']; ?> </h5>
