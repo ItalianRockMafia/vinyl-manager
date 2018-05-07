@@ -34,7 +34,7 @@ session_start();
 				<a class="nav-link" href="../emp">EMP</a>
 			  </li>
 			  <li class="nav-item active">
-				<a class="nav-link" href="https://italianrockmafia.ch/vinyl">Events <span class="sr-only">(current)</span></a>
+				<a class="nav-link" href="https://italianrockmafia.ch/vinyl">Vinyl <span class="sr-only">(current)</span></a>
 			  </li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
@@ -51,6 +51,7 @@ session_start();
 <?php
 
 require '../global/functions/apicalls.php';
+require '../global/functions/irm.php';
 require '../global/functions/telegram.php';
 $config = require "../config.php";
 
@@ -65,8 +66,46 @@ if ($tg_user !== false) {
 	}
 	
 	$_SESSION['irmID'] = $irm_user['id'];
+	saveSessionArray($tg_user);
+	?>
+	<h1>IRM-Record Library</h1>
+<p class="desc">With this tool, you can manage your Record Library. Also you have access to your friends library</p>
+<h2>Your records <a href="new.php"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a></h2>
+<?php
+	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id']), true);
+	foreach($my_records['userAlbums'] as $record){
+		$artist = $record['artist'];
+		$album = $record['album_title'];
+		$mbid = $record['mbid'];
+		
+		if(empty($mbid)){
+			
+		$last_album = json_decode(getCall($config->lastfm['api_root'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&album=" . $album . "&artist=" . $artist . "&format=json"), true);
+	} else {
+			$last_album = json_decode(getCall($config->lastfm['api_url'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&mbid=" . $mbid ."&format=json"),true);
+		}
+		
+		for ($i=0; $i < count($last_album['album']['image']); $i++) { 
+			
+            if($last_album['album']['image'][$i]['size'] == 'mega') {
+              $largeImg = $last_album['album']['image'][$i]['#text'];
+              
+            }
+          }
+?>
+<div class="card" style="width: 18rem;">
+  <img class="card-img-top" src="<?php echo $largeImg ?>" alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title"><?php echo $last_album['album']['artist']; ?> </h5>
+    <p class="card-text"><?php echo $last_album['album']['name']; ?> </p>
+    <a href="<?php echo $last_album['album']['url']; ?> " class="btn btn-primary" target="_blank" >View album</a>
+  </div>
+</div>
+<?php
 
-	
+  
+	}
+
 } else {
 	echo '
 	<div class="alert alert-danger" role="alert">
