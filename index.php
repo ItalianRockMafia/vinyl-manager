@@ -73,7 +73,7 @@ if ($tg_user !== false) {
 <h2>Your records <a href="new.php"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a></h2>
 <?php
 	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
-	echo '<div class="card-deck">';
+	echo '<div class="card-columns">';
 	foreach($my_records['userAlbums'] as $record){
 		$artist = $record['artist'];
 		$album = $record['album_title'];
