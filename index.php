@@ -110,6 +110,8 @@ if ($tg_user !== false) {
 		$artist = $record['artist'];
 		$album = $record['album_title'];
 		$mbid = $record['mbid'];
+		$recID = $record['useralbumID'];
+	
 		
 		if(empty($mbid)){
 			
@@ -150,6 +152,8 @@ if ($tg_user !== false) {
 			echo '<a href="#" class="btn btn-primary disabled" target="_blank">View album</a>';
 			echo '</span>';
 		}
+		echo '<a href="add-data.php?del='. $recID . '"><button type="button" class="btn btn-danger">Remove from my library</button></a>';
+		
 		$largeImg = "http://www.51allout.co.uk/wp-content/uploads/2012/02/Image-not-found.gif";
 		?>
 		  </div>

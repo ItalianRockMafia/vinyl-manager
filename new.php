@@ -17,7 +17,8 @@ if(isset($_GET['add'])){
 	$last_album = json_decode(getCall($config->lastfm['api_root'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&album=" . $album . "&artist=" . $artist . "&format=json"), true);
 	$mbid = $last_album['album']['mbid'];
 	
-	$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\", \n \t \"mbid\": \"$mbid\" \n }";
+	//$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\", \n \t \"mbid\": \"$mbid\" \n }";
+	$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\"\n }";
 	$album2db = postCall($config->api_url . "albums", $postfields);
 	if(is_numeric($album2db)){
 		$irmID = $_SESSION['irmID'];
