@@ -12,7 +12,31 @@ $tg_user = getTelegramUserData();
 if(isset($_GET['add'])){
 	$artist = $_POST['artist'];
 	$album = $_POST['album'];
+
+	$artistName = json_decode(getCall($config->api_url . "artists/" . $artist . "?transform=1"), true);
+	$last_album = json_decode(getCall($config->lastfm['api_root'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&album=" . $album . "&artist=" . $artist . "&format=json"), true);
+	$mbid = $last_album['album']['mbid'];
 	
+	$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\", \n \t \"mbid\": \"$mbid\" \n }";
+	$album2db = postCall($config->api_url . "albums", $postfields);
+	if(is_numeric($album2db)){
+		$irmID = $_SESSION['irmID'];
+		$postfields = "{\n \t \"userIDFK\": \"$irmID\", \n \t \"albumIDFK\": \"$album2db\" \n }";
+		$albumAdded = postCall($config->api_url . "userHasAlbum", $postfields);
+		if(is_numeric($albumAdded)){
+			
+			header('Location: https://italianrockmafia.ch/vinyl/?added=complete');
+		} else {
+			header('Location: https://italianrockmafia.ch/vinyl/?added=failed');
+		}
+	} else{
+		header('Location: https://italianrockmafia.ch/vinyl/new.php?added=fail');
+	}
+	
+}
+
+if(isset($_GET['addex'])){
+	$album = $_POST['existing'];
 	$irmID = $_SESSION['irmID'];
 	$postfields = "{\n \t \"userIDFK\": \"$irmID\", \n \t \"albumIDFK\": \"$album\" \n }";
 	$albumAdded = postCall($config->api_url . "userHasAlbum", $postfields);
@@ -74,37 +98,49 @@ if(isset($_GET['add'])){
 
 saveSessionArray($tg_user);
 if ($tg_user !== false) {
-	$albums = json_decode(getCall($config->api_url . "albums?transform=1"), true);
+	
 	$artists = json_decode(getCall($config->api_url . "artists?transform=1"), true);
+	$records = json_decode(getCall($config->api_url . "albumArtist?transform=1"), true);
 
 	?>
-	<h1>Add new record</h1>
-	<form method="POST" action="?add=1">
+	<h1>Add recordto your library</h1>
+	<h2>Add existing record</h2>
+	<form method="POST" action="?addex=1">
   <div class="form-group">
-  <label for="artist" class="">Artist</label><a href="add-data.php?artist=1"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a>
-		<select class="form-control" id="artist" name="artist"><?php
+  <label for="existing" class="">Select record</label></a>
+		<select class="form-control" id="existing" name="existing"><?php
+		
+		foreach($records["albumArtist"] as $record){
+			echo '<option value="' . $record['albumID'] . '">' . $record['artist'] . ' - ' . $record['album_title'] . '</option>';
+		}
+	?>
+	</select>
+  </div>
+  
+	<button type="submit" class="btn btn-success">Add to my records</button>
+
+</form>
+<div class="topspacer"></div>
+<h2>Add new record</h2>
+<form method="POST" action="?add=1">
+<div class="form-group">
+		<label for="album">Album title</label>
+		<input type="text" class="form-control" name="album" id="album" placeholder="Silver">
+	</div>
+
+<div class="form-group">
+	  <label for="artist">Select artist</label><a href="add-data.php?artist=1"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a>
+	  <select id="artist" name="artist" class="form-control"><?php
 		
 		foreach($artists["artists"] as $artist){
 			echo '<option value="' . $artist['artistID'] . '">' . $artist['artist'] . '</option>';
 		}
 	?>
 	</select>
-  </div>
-  <div class="form-group">
-	  <label for="album">Album</label><a href="add-data.php?album=1"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a>
-	  <select id="album" name="album" class="form-control"><?php
-		
-		foreach($albums["albums"] as $album){
-			echo '<option value="' . $album['albumID'] . '">' . $album['album_title'] . '</option>';
-		}
-	?>
-	</select>
 	</div>
 	<button type="submit" class="btn btn-success">Add to my records</button>
 
-
 </form>
-
 <?php
 } else {
 	echo '
