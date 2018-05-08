@@ -89,18 +89,38 @@ if ($tg_user !== false) {
 		for ($i=0; $i < count($last_album['album']['image']); $i++) { 
 			
             if($last_album['album']['image'][$i]['size'] == 'mega') {
-              $largeImg = $last_album['album']['image'][$i]['#text'];
-              
-            }
+							$largeImg = "";
+							$largeImg = $last_album['album']['image'][$i]['#text']; 
+            } 
           }
 ?>
 <div class="card" style="">
-  <img class="card-img-top" src="<?php echo $largeImg ?>" alt="Card image cap">
+  <img class="card-img-top" src="<?php echo $largeImg ?>" alt="<?php echo $last_album['album']['name'] . ' album cover';?>">
   <div class="card-body">
-    <h5 class="card-title"><?php echo $last_album['album']['artist']; ?> </h5>
-    <p class="card-text"><?php echo $last_album['album']['name']; ?> </p>
-    <a href="<?php echo $last_album['album']['url']; ?> " class="btn btn-primary" target="_blank" >View album</a>
-  </div>
+		<h5 class="card-title"><?php
+		if(!empty($last_album['album']['artist'])){ 
+			echo $last_album['album']['artist']; 
+		} else {
+			echo $artist;
+		}
+			?> </h5>
+		<p class="card-text"><?php
+		if(!empty($last_album['album']['name'])){
+			echo $last_album['album']['name']; 
+		} else {
+			echo $album;
+		}
+		?> </p>
+		<?php if(!empty($last_album['album']['url'])){
+			echo '<a href="'. $last_album['album']['url'] . '"class="btn btn-primary" target="_blank" >View album</a>';
+		} else {
+			echo '<span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Album not found">';
+			echo '<a href="#" class="btn btn-primary disabled" target="_blank">View album</a>';
+			echo '</span>';
+		}
+		$largeImg = "http://www.51allout.co.uk/wp-content/uploads/2012/02/Image-not-found.gif";
+		?>
+		  </div>
 </div>
 <?php
 
