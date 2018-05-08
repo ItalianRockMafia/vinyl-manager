@@ -1,5 +1,6 @@
 <?php
 session_start();
+$user2show = $_POST['friend']
 ?>
 <!doctype html>
 <html>
@@ -68,31 +69,29 @@ if ($tg_user !== false) {
 	$_SESSION['irmID'] = $irm_user['id'];
 	saveSessionArray($tg_user);
 
-	$allIrmUsers = json_decode(getCall($config->api_url . "users?transform=1"),true);
+	$friend = json_decode(getCall($config->api_url . "users/" . $user2show . "?transform=1"), true);
 	?>
 	<h1>IRM-Record Library</h1>
-<p class="desc">With this tool, you can manage your Record Library. Also you have access to your friends library</p>
-<h2>Library of someone else</h2>
-<form class="form-inline" method="POST" action="friend.php">
-<div class="form-group mb-2">
-  	<label for="friend" class="sr-only">Select friend</label>
-		<select class="form-control" name="friend">
-		<?php
-		foreach($allIrmUsers['users'] as $irm_user){
-			echo '<option value="' . $irm_user['userID'] . '">' . $irm_user['firstname'] . ' ' . $irm_user['lastname'] . ' (' . $irm_user['tgusername'] . ')</option>';
-		}
-		?>
-		</select>
-  </div>
-	<button type="submit" class="btn btn-success mb-2">Show records </button>
-	</form>
+	<p class="desc">With this tool, you can manage your Record Library. Also you have access to your friends library</p>
+	<h2>Records of <?php echo $friend['tgusername']; ?></h2>
 
-
-<h2>Your records <a href="new.php"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a></h2>
-<?php
-	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
+	<?php
+	$friend_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $friend['telegramID'] . "&order[]=artist&order[]=album_title"), true);
+	if(empty($friend_records['userAlbums'])){
+		die('<div class="alert alert-warning" role="alert">
+		'. $friend['tgusername'] . ' has no records.' . '
+	  </div>
+	  </div>
+	  </main>
+	  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		  </body>
+	  </html> 
+	  ');
+	}
 	echo '<div class="card-columns" style="display: inline-block;">';
-	foreach($my_records['userAlbums'] as $record){
+	foreach($friend_records['userAlbums'] as $record){
 		$artist = $record['artist'];
 		$album = $record['album_title'];
 		$mbid = $record['mbid'];
@@ -103,7 +102,6 @@ if ($tg_user !== false) {
 	} else {
 			$last_album = json_decode(getCall($config->lastfm['api_root'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&mbid=" . $mbid ."&format=json"),true);
 		}
-		
 		for ($i=0; $i < count($last_album['album']['image']); $i++) { 
 			
             if($last_album['album']['image'][$i]['size'] == 'mega') {
@@ -161,3 +159,4 @@ if ($tg_user !== false) {
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 				</body>
 			</html>
+
