@@ -70,10 +70,32 @@ if ($tg_user !== false) {
 	?>
 	<h1>IRM-Record Library</h1>
 <p class="desc">With this tool, you can manage your Record Library. Also you have access to your friends library</p>
+<?php
+if($_GET['added'] == "complete"){
+	echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <strong>Success!</strong> Album added.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>';
+}
+
+if($_GET['added'] == "failed"){
+	echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+	<strong>Error!</strong> Adding album failed.
+	<hr>
+  <p class="mb-0"Maybe there is already an album with that title in the database?</p>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>';
+}
+
+?>
 <h2>Your records <a href="new.php"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a></h2>
 <?php
 	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
-	echo '<div class="card-deck">';
+	echo '<div class="card-columns" style="display: inline-block;">';
 	foreach($my_records['userAlbums'] as $record){
 		$artist = $record['artist'];
 		$album = $record['album_title'];
