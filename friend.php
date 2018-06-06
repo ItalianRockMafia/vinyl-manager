@@ -1,5 +1,6 @@
 <?php
 session_start();
+$user2show = $_POST['friend']
 ?>
 <!doctype html>
 <html>
@@ -68,55 +69,17 @@ if ($tg_user !== false) {
 	$_SESSION['irmID'] = $irm_user['id'];
 	saveSessionArray($tg_user);
 
-	$allIrmUsers = json_decode(getCall($config->api_url . "users?transform=1"),true);
+	$friend = json_decode(getCall($config->api_url . "users/" . $user2show . "?transform=1"), true);
 	?>
 	<h1>IRM-Record Library</h1>
-<p class="desc">With this tool, you can manage your Record Library. Also you have access to your friends library</p>
-<?php
-if($_GET['added'] == "complete"){
-	echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
-  <strong>Success!</strong> Album added.
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>';
-}
+	<p class="desc">With this tool, you can manage your Record Library. Also you have access to your friends library</p>
+	<h2>Records of <?php echo $friend['tgusername']; ?></h2>
 
-if($_GET['added'] == "failed"){
-	echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-	<strong>Error!</strong> Adding album failed.
-	<hr>
-  <p class="mb-0"Maybe there is already an album with that title in the database?</p>
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>';
-}
-
-	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
-	?>
-<h2>Library of someone else</h2>
-<form class="form-inline" method="POST" action="friend.php">
-<div class="form-group mb-2">
-  	<label for="friend" class="sr-only">Select friend</label>
-		<select class="form-control" name="friend">
-		<?php
-		foreach($allIrmUsers['users'] as $irm_user){
-			echo '<option value="' . $irm_user['userID'] . '">' . $irm_user['firstname'] . ' ' . $irm_user['lastname'] . ' (' . $irm_user['tgusername'] . ')</option>';
-		}
-		?>
-		</select>
-  </div>
-	<button type="submit" class="btn btn-success mb-2">Show records </button>
-	</form>
-
-
-<h2>Your records <a href="new.php"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a></h2>
-<?php
-	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
-	if(empty($my_records['userAlbums'])){
+	<?php
+	$friend_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $friend['telegramID'] . "&order[]=artist&order[]=album_title"), true);
+	if(empty($friend_records['userAlbums'])){
 		die('<div class="alert alert-warning" role="alert">
-		You have no records.
+		'. $friend['tgusername'] . ' has no records.' . '
 	  </div>
 	  </div>
 	  </main>
@@ -127,14 +90,11 @@ if($_GET['added'] == "failed"){
 	  </html> 
 	  ');
 	}
-	
 	echo '<div class="card-columns" style="display: inline-block;">';
-	foreach($my_records['userAlbums'] as $record){
+	foreach($friend_records['userAlbums'] as $record){
 		$artist = $record['artist'];
 		$album = $record['album_title'];
 		$mbid = $record['mbid'];
-		$recID = $record['useralbumID'];
-	
 		
 		if(empty($mbid)){
 			
@@ -142,7 +102,6 @@ if($_GET['added'] == "failed"){
 	} else {
 			$last_album = json_decode(getCall($config->lastfm['api_root'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&mbid=" . $mbid ."&format=json"),true);
 		}
-		
 		for ($i=0; $i < count($last_album['album']['image']); $i++) { 
 			
             if($last_album['album']['image'][$i]['size'] == 'mega') {
@@ -175,8 +134,6 @@ if($_GET['added'] == "failed"){
 			echo '<a href="#" class="btn btn-primary disabled" target="_blank">View album</a>';
 			echo '</span>';
 		}
-		echo '<a href="add-data.php?del='. $recID . '"><button type="button" class="btn btn-danger">Remove from my library</button></a>';
-		
 		$largeImg = "http://www.51allout.co.uk/wp-content/uploads/2012/02/Image-not-found.gif";
 		?>
 		  </div>
@@ -202,3 +159,4 @@ if($_GET['added'] == "failed"){
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 				</body>
 			</html>
+

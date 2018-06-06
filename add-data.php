@@ -75,6 +75,18 @@ if ($tg_user !== false) {
 		header('Location: new.php?new=1');
 	}
 
+	if(isset($_GET['del'])){
+	$rec2del = $_GET['del'];
+	$deleted = deleteCall($config->api_url . "userHasAlbum/" . $rec2del);
+	if(is_numeric($deleted)){
+		header('Location: https://italianrockmafia.ch/vinyl/?removed=success');
+	} else {
+		header('Location: https://italianrockmafia.ch/vinyl/?removed=fail');
+		
+	}
+}
+
+
 
 	if(isset($_GET['artist'])){
 		?>
