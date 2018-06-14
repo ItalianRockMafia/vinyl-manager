@@ -133,6 +133,7 @@ if($_GET['added'] == "failed"){
 		$artist = $record['artist'];
 		$album = $record['album_title'];
 		$mbid = $record['mbid'];
+		$recordType = $record['recordType'];
 		$recID = $record['useralbumID'];
 	
 		
@@ -178,8 +179,12 @@ if($_GET['added'] == "failed"){
 		echo '<a href="add-data.php?del='. $recID . '"><button type="button" class="btn btn-danger">Remove from my library</button></a>';
 		
 		$largeImg = "http://www.51allout.co.uk/wp-content/uploads/2012/02/Image-not-found.gif";
+	echo '	
+	</div>
+	<div class="card-footer">
+      <small class="text-muted">'. $recordType  .'</small>
+		</div>';
 		?>
-		  </div>
 </div>
 <?php
 
