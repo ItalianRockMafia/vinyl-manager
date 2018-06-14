@@ -121,6 +121,7 @@ foreach($recordTypes['records'] as $type){
 	echo '<label class="form-check-label" for="'. $type['recordType'].'">'. $type['recordType'] .'</label>';
 	echo '</div>';
 }
+echo '<span class="badge badge-success">Works soon</span>';
 
 $my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
 	if(empty($my_records['userAlbums'])){
