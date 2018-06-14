@@ -12,13 +12,14 @@ $tg_user = getTelegramUserData();
 if(isset($_GET['add'])){
 	$artist = $_POST['artist'];
 	$album = $_POST['album'];
+	$type = $_POST['recordtype'];
 
 	$artistName = json_decode(getCall($config->api_url . "artists/" . $artist . "?transform=1"), true);
 	$last_album = json_decode(getCall($config->lastfm['api_root'] . "2.0/?method=album.getinfo&api_key=" . $config->lastfm['api_key'] . "&album=" . $album . "&artist=" . $artist . "&format=json"), true);
 	$mbid = $last_album['album']['mbid'];
 	
 	//$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\", \n \t \"mbid\": \"$mbid\" \n }";
-	$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\"\n }";
+	$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\", \n \t \"recordIDFK\": \"$type\" \n}";
 	$album2db = postCall($config->api_url . "albums", $postfields);
 	if(is_numeric($album2db)){
 		$irmID = $_SESSION['irmID'];
@@ -28,22 +29,23 @@ if(isset($_GET['add'])){
 			
 			header('Location: https://italianrockmafia.ch/vinyl/?added=complete');
 		} else {
-			header('Location: https://italianrockmafia.ch/vinyl/?added=failed');
+		header('Location: https://italianrockmafia.ch/vinyl/?added=failed');
 		}
 	} else{
 		header('Location: https://italianrockmafia.ch/vinyl/new.php?added=fail');
 	}
-	
 }
 
 if(isset($_GET['addex'])){
 	$album = $_POST['existing'];
 	$irmID = $_SESSION['irmID'];
-	$postfields = "{\n \t \"userIDFK\": \"$irmID\", \n \t \"albumIDFK\": \"$album\" \n }";
+	$type = $_POST['recordtype'];
+
+	$postfields = "{\n \t \"userIDFK\": \"$irmID\", \n \t \"albumIDFK\": \"$album\", \n \t \"recordIDFK\": \"$type\" \n }";
 	$albumAdded = postCall($config->api_url . "userHasAlbum", $postfields);
 	if(is_numeric($albumAdded)){
 		
-		header('Location: https://italianrockmafia.ch/vinyl/?added=complete');
+	header('Location: https://italianrockmafia.ch/vinyl/?added=complete');
 	} else {
 		header('Location: https://italianrockmafia.ch/vinyl/?added=failed');
 	}
@@ -116,8 +118,23 @@ if ($tg_user !== false) {
 		}
 	?>
 	</select>
+	</div>
+	<div class="form-group">
+		<?php
+	$records = json_decode(getCall($config->api_url . "records?transform=1"),true);
+	foreach($records['records'] as $record){
+		echo '<div class="form-check form-check-inline">';
+		echo '<input class="form-check-input" type="radio" name="recordtype" id="record' . $record['recordType'] . '" value="' . $record['recordID'] .'"';
+		if($record['recordID'] == "1"){
+			echo 'checked';
+		}
+		echo '>';
+		echo '<label class="form-check-label" for="record' . $record['recordType'] . '">'. $record['recordType'] .'</label>';
+		echo '</div>';
+
+	}
+?>
   </div>
-  
 	<button type="submit" class="btn btn-success">Add to my records</button>
 
 </form>
@@ -138,9 +155,23 @@ if ($tg_user !== false) {
 		}
 	?>
 	</select>
-	</div>
-	<button type="submit" class="btn btn-success">Add to my records</button>
+	<div class="form-group">
+		<?php
+	$records = json_decode(getCall($config->api_url . "records?transform=1"),true);
+	foreach($records['records'] as $record){
+		echo '<div class="form-check form-check-inline">';
+		echo '<input class="form-check-input" type="radio" name="recordtype" id="record' . $record['recordType'] . '" value="' . $record['recordID'] .'"';
+		if($record['recordID'] == "1"){
+			echo 'checked';
+		}
+		echo '>';
+		echo '<label class="form-check-label" for="record' . $record['recordType'] . '">'. $record['recordType'] .'</label>';
+		echo '</div>';
 
+	}
+?>
+  </div>
+	<button type="submit" class="btn btn-success">Add to my records</button>
 </form>
 <?php
 } else {
