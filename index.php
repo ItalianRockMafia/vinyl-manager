@@ -94,6 +94,7 @@ if($_GET['added'] == "failed"){
 }
 
 	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
+	$recordTypes = json_decode(getcall($config->api_url . "records=?transform=1"), true);
 	?>
 <h2>Library of someone else</h2>
 <form class="form-inline" method="POST" action="friend.php">
@@ -113,7 +114,15 @@ if($_GET['added'] == "failed"){
 
 <h2>Your records <a href="new.php"><i class="fa fa-plus-circle righticon" aria-hidden="true"></i></a></h2>
 <?php
-	$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
+echo 'Filter: ';
+foreach($recordTypes['records'] as $type){
+	echo '<div class="form-check form-check-inline">';
+	echo '<input class="form-check-input" type="checkbox" id="check-'. $type['recordType'] . '" value="'. $type['recordType'] .'">';
+	echo '<label class="form-check-label" for="'. $type['recordType'].'">'. $type['recordType'] .'</label>';
+	echo '</div>';
+}
+
+$my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
 	if(empty($my_records['userAlbums'])){
 		die('<div class="alert alert-warning" role="alert">
 		You have no records.
@@ -152,7 +161,7 @@ if($_GET['added'] == "failed"){
             } 
           }
 ?>
-<div class="card" style="">
+<div class="card <?php echo $recordType; ?>" style="">
   <img class="card-img-top" src="<?php echo $largeImg ?>" alt="<?php echo $last_album['album']['name'] . ' album cover';?>">
   <div class="card-body">
 		<h5 class="card-title"><?php
@@ -202,6 +211,28 @@ if($_GET['added'] == "failed"){
 		
 			</div>
 			</main>
+			<script type="text/javascript">
+				<?php
+				foreach($recordTypes['records'] as $recordType){
+				echo 'function handle' . $recordType['recordType'] . '(){';
+				echo 'var ' . $recordType['recordType'] . '-box = document.getElementById("check-' .  $recordType['recordType'] . '");';
+				echo 'if(' .  $recordType['recordType'] . '-box.checked == true){';
+				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {
+					el.style.display = 'inline';
+				});";
+				echo '} else {';
+				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {
+					el.style.display = 'none';
+				});
+				
+			}}";
+
+
+			}
+
+
+			?>
+			</script>
 			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
