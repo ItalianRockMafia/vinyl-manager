@@ -117,7 +117,7 @@ if($_GET['added'] == "failed"){
 echo 'Filter: ';
 foreach($recordTypes['records'] as $type){
 	echo '<div class="form-check form-check-inline">';
-	echo '<input class="form-check-input" type="checkbox" id="check-'. $type['recordType'] . '" value="'. $type['recordType'] .'">';
+	echo '<input class="form-check-input" type="checkbox" id="check-'. $type['recordType'] . '" value="'. $type['recordType'] .'" onChange="handle' . $type['recordType'] . '()" checked>';
 	echo '<label class="form-check-label" for="'. $type['recordType'].'">'. $type['recordType'] .'</label>';
 	echo '</div>';
 }
