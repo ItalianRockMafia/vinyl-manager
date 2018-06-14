@@ -19,11 +19,11 @@ if(isset($_GET['add'])){
 	$mbid = $last_album['album']['mbid'];
 	
 	//$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\", \n \t \"mbid\": \"$mbid\" \n }";
-	$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\", \n \t \"recordIDFK\": \"$type\" \n}";
+	$postfields = "{\n \t \"album_title\": \"$album\", \n \t \"artistIDFK\": \"$artist\" \n}";
 	$album2db = postCall($config->api_url . "albums", $postfields);
 	if(is_numeric($album2db)){
 		$irmID = $_SESSION['irmID'];
-		$postfields = "{\n \t \"userIDFK\": \"$irmID\", \n \t \"albumIDFK\": \"$album2db\" \n }";
+		$postfields = "{\n \t \"userIDFK\": \"$irmID\", \n \t \"albumIDFK\": \"$album2db\", \n \t \"recordIDFK\": \"$type\" \n }";
 		$albumAdded = postCall($config->api_url . "userHasAlbum", $postfields);
 		if(is_numeric($albumAdded)){
 			
@@ -34,6 +34,7 @@ if(isset($_GET['add'])){
 	} else{
 		header('Location: https://italianrockmafia.ch/vinyl/new.php?added=fail');
 	}
+	echo "<pre>"; print_r($postfields); echo "</pre>";
 }
 
 if(isset($_GET['addex'])){
