@@ -116,12 +116,11 @@ if($_GET['added'] == "failed"){
 <?php
 echo 'Filter: ';
 foreach($recordTypes['records'] as $type){
-	echo '<div class="form-check form-check-inline">';
-	echo '<input class="form-check-input" type="checkbox" id="check-'. $type['recordType'] . '" value="'. $type['recordType'] .'" onChange="handle' . $type['recordType'] . '()" checked>';
-	echo '<label class="form-check-label" for="'. $type['recordType'].'">'. $type['recordType'] .'</label>';
-	echo '</div>';
+	echo '<div class="form-check form-check-inline">' . "\n\t";
+	echo '<input class="form-check-input" type="checkbox" name="check_'. $type['recordType'] .'" id="check_'. $type['recordType'] . '" value="'. $type['recordType'] .'" onChange="handle' . $type['recordType'] . '()" checked>' . "\n\t";
+	echo '<label class="form-check-label" for="check_'. $type['recordType'].'">'. $type['recordType'] .'</label>' . "\n";
+	echo '</div>' . "\n";
 }
-echo '<span class="badge badge-success">Works soon</span>';
 
 $my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $tg_user['id'] . "&order[]=artist&order[]=album_title"), true);
 	if(empty($my_records['userAlbums'])){
@@ -215,13 +214,13 @@ $my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filt
 			<script type="text/javascript">
 				<?php
 				foreach($recordTypes['records'] as $recordType){
-				echo 'function handle' . $recordType['recordType'] . '(){';
-				echo 'var ' . $recordType['recordType'] . '-box = document.getElementById("check-' .  $recordType['recordType'] . '");';
-				echo 'if(' .  $recordType['recordType'] . '-box.checked == true){';
+				echo 'function handle' . $recordType['recordType'] . "(){\n\t\t\t\t\t";
+				echo 'var ' . $recordType['recordType'] . '_box = document.getElementById("check_' .  $recordType['recordType'] . '");' . "\n\t\t\t\t\t";
+				echo 'if(' .  $recordType['recordType'] . "_box.checked == true){\n\t\t\t\t\t\t";
 				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {
 					el.style.display = 'inline';
-				});";
-				echo '} else {';
+				});\n\t\t\t\t\t";
+				echo "} else {\n\t\t\t\t\t\t";
 				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {
 					el.style.display = 'none';
 				});
