@@ -218,7 +218,7 @@ $my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filt
 				echo 'var ' . $recordType['recordType'] . '_box = document.getElementById("check_' .  $recordType['recordType'] . '");' . "\n\t\t\t\t\t";
 				echo 'if(' .  $recordType['recordType'] . "_box.checked == true){\n\t\t\t\t\t\t";
 				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {
-					el.style.display = 'inline';
+					el.style.display = 'inline-block';
 				});\n\t\t\t\t\t";
 				echo "} else {\n\t\t\t\t\t\t";
 				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {

@@ -77,6 +77,8 @@ if ($tg_user !== false) {
 
 	<?php
 	$friend_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filter=telegramID,eq," . $friend['telegramID'] . "&order[]=artist&order[]=album_title"), true);
+	$recordTypes = json_decode(getcall($config->api_url . "records=?transform=1"), true);
+
 	if(empty($friend_records['userAlbums'])){
 		die('<div class="alert alert-warning" role="alert">
 		'. $friend['tgusername'] . ' has no records.' . '
@@ -90,10 +92,19 @@ if ($tg_user !== false) {
 	  </html> 
 	  ');
 	}
+	foreach($recordTypes['records'] as $type){
+		echo '<div class="form-check form-check-inline">' . "\n\t";
+		echo '<input class="form-check-input" type="checkbox" name="check_'. $type['recordType'] .'" id="check_'. $type['recordType'] . '" value="'. $type['recordType'] .'" onChange="handle' . $type['recordType'] . '()" checked>' . "\n\t";
+		echo '<label class="form-check-label" for="check_'. $type['recordType'].'">'. $type['recordType'] .'</label>' . "\n";
+		echo '</div>' . "\n";
+	}
+	
+
 	echo '<div class="card-columns" style="display: inline-block;">';
 	foreach($friend_records['userAlbums'] as $record){
 		$artist = $record['artist'];
 		$album = $record['album_title'];
+		$recordType = $record['recordType'];
 		$mbid = $record['mbid'];
 		
 		if(empty($mbid)){
@@ -110,7 +121,7 @@ if ($tg_user !== false) {
             } 
           }
 ?>
-<div class="card" style="">
+<div class="card <?php echo $recordType; ?>" style="">
   <img class="card-img-top" src="<?php echo $largeImg ?>" alt="<?php echo $last_album['album']['name'] . ' album cover';?>">
   <div class="card-body">
 		<h5 class="card-title"><?php
@@ -135,8 +146,13 @@ if ($tg_user !== false) {
 			echo '</span>';
 		}
 		$largeImg = "http://www.51allout.co.uk/wp-content/uploads/2012/02/Image-not-found.gif";
+	
+			echo '	
+	</div>
+	<div class="card-footer">
+      <small class="text-muted">'. $recordType  .'</small>
+		</div>';
 		?>
-		  </div>
 </div>
 <?php
 
@@ -154,6 +170,28 @@ if ($tg_user !== false) {
 		
 			</div>
 			</main>
+			<script type="text/javascript">
+				<?php
+				foreach($recordTypes['records'] as $recordType){
+				echo 'function handle' . $recordType['recordType'] . "(){\n\t\t\t\t\t";
+				echo 'var ' . $recordType['recordType'] . '_box = document.getElementById("check_' .  $recordType['recordType'] . '");' . "\n\t\t\t\t\t";
+				echo 'if(' .  $recordType['recordType'] . "_box.checked == true){\n\t\t\t\t\t\t";
+				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {
+					el.style.display = 'inline-block';
+				});\n\t\t\t\t\t";
+				echo "} else {\n\t\t\t\t\t\t";
+				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {
+					el.style.display = 'none';
+				});
+				
+			}}";
+
+
+			}
+
+
+			?>
+			</script>
 			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
