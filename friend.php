@@ -1,6 +1,23 @@
 <?php
 session_start();
-$user2show = $_POST['friend']
+$user2show = $_POST['friend'];
+
+require '../global/functions/apicalls.php';
+require '../global/functions/irm.php';
+require '../global/functions/telegram.php';
+$config = require "../config.php";
+
+require_once '../global/functions/header.php';
+require_once '../global/functions/footer.php';
+
+$friend = json_decode(getCall($config->api_url . "users/" . $user2show . "?transform=1"), true);
+
+$menu = renderMenu();
+$options['nav'] = $menu;
+$options['title'] = "IRM | " . $friend['tgusername'] . "s library";
+$header = getHeader($options);
+
+echo $header;
 ?>
 <!doctype html>
 <html>
@@ -51,11 +68,6 @@ $user2show = $_POST['friend']
 
 <?php
 
-require '../global/functions/apicalls.php';
-require '../global/functions/irm.php';
-require '../global/functions/telegram.php';
-$config = require "../config.php";
-
 
 $tg_user = getTelegramUserData();
 
@@ -69,7 +81,6 @@ if ($tg_user !== false) {
 	$_SESSION['irmID'] = $irm_user['id'];
 	saveSessionArray($tg_user);
 
-	$friend = json_decode(getCall($config->api_url . "users/" . $user2show . "?transform=1"), true);
 	?>
 	<h1>IRM-Record Library</h1>
 	<p class="desc">With this tool, you can manage your Record Library. Also you have access to your friends library</p>
@@ -166,35 +177,31 @@ if ($tg_user !== false) {
   </div>
 ';
 }
+
+$custom_footer = '<script type="text/javascript">
+<?php
+foreach($recordTypes[\'records\'] as $recordType){
+echo \'function handle\' . $recordType[\'recordType\'] . "(){\n\t\t\t\t\t";
+echo \'var \' . $recordType[\'recordType\'] . \'_box = document.getElementById("check_\' .  $recordType[\'recordType\'] . \'");\' . "\n\t\t\t\t\t";
+echo \'if(\' .  $recordType[\'recordType\'] . "_box.checked == true){\n\t\t\t\t\t\t";
+echo "[].forEach.call(document.querySelectorAll(\'.". $recordType[\'recordType\']."\'), function (el) {
+	el.style.display = \'inline-block\';
+});\n\t\t\t\t\t";
+echo "} else {\n\t\t\t\t\t\t";
+echo "[].forEach.call(document.querySelectorAll(\'.". $recordType[\'recordType\']."\'), function (el) {
+	el.style.display = \'none\';
+});
+
+}}";
+
+
+}
+
+
+?>
+</script>';
+$footer = renderFooter($custom_footer);
+echo $footer;
 ?>
 		
-			</div>
-			</main>
-			<script type="text/javascript">
-				<?php
-				foreach($recordTypes['records'] as $recordType){
-				echo 'function handle' . $recordType['recordType'] . "(){\n\t\t\t\t\t";
-				echo 'var ' . $recordType['recordType'] . '_box = document.getElementById("check_' .  $recordType['recordType'] . '");' . "\n\t\t\t\t\t";
-				echo 'if(' .  $recordType['recordType'] . "_box.checked == true){\n\t\t\t\t\t\t";
-				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {
-					el.style.display = 'inline-block';
-				});\n\t\t\t\t\t";
-				echo "} else {\n\t\t\t\t\t\t";
-				echo "[].forEach.call(document.querySelectorAll('.". $recordType['recordType']."'), function (el) {
-					el.style.display = 'none';
-				});
-				
-			}}";
-
-
-			}
-
-
-			?>
-			</script>
-			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-				</body>
-			</html>
-
+	
