@@ -71,6 +71,9 @@ if(isset($_GET['addex'])){
 	<?php
 
 saveSessionArray($tg_user);
+$access = $_SESSION['access'];
+if($access >=3){
+
 if ($tg_user !== false) {
 	
 	$artists = json_decode(getCall($config->api_url . "artists?transform=1"), true);
@@ -145,6 +148,14 @@ if ($tg_user !== false) {
 	<button type="submit" class="btn btn-success">Add to my records</button>
 </form>
 <?php
+
+}else {
+	echo '
+	<div class="alert alert-warning" role="alert">
+	<strong>Warning.</strong> You have no access to this page.
+	</div>
+';
+}
 } else {
 	echo '
 	<div class="alert alert-danger" role="alert">

@@ -35,7 +35,10 @@ if ($tg_user !== false) {
 	
 	$_SESSION['irmID'] = $irm_user['id'];
 	saveSessionArray($tg_user);
+	$access = $_SESSION['access'];
+	if($access >=3){
 
+	
 	$allIrmUsers = json_decode(getCall($config->api_url . "users?transform=1"),true);
 	?>
 	<h1>IRM-Record Library</h1>
@@ -167,6 +170,14 @@ $my_records = json_decode(getCall($config->api_url ."userAlbums?transform=1&filt
 
   
 	}
+}
+else {
+	echo '
+	<div class="alert alert-warning" role="alert">
+	<strong>Warning.</strong> You have no access to this page.
+  </div>
+';
+}
 
 } else {
 	echo '

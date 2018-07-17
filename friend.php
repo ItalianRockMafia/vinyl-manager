@@ -38,6 +38,9 @@ if ($tg_user !== false) {
 	
 	$_SESSION['irmID'] = $irm_user['id'];
 	saveSessionArray($tg_user);
+	$access = $_SESSION['access'];
+	if($access >=3){
+
 
 	?>
 	<h1>IRM-Record Library</h1>
@@ -127,7 +130,13 @@ if ($tg_user !== false) {
 
   
 	}
-
+}else {
+		echo '
+		<div class="alert alert-warning" role="alert">
+		<strong>Warning.</strong> You have no access to this page.
+	  </div>
+	';
+	}
 } else {
 	echo '
 	<div class="alert alert-danger" role="alert">

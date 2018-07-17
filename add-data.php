@@ -29,6 +29,8 @@ echo $header;
 	<?php
 
 saveSessionArray($tg_user);
+$access = $_SESSION['access'];
+if($access >=3){
 if ($tg_user !== false) {
 
 	if(isset($_GET['addartist'])){
@@ -93,7 +95,13 @@ if ($tg_user !== false) {
 	  </form>
 	<?php
 	}
-
+}else {
+	echo '
+	<div class="alert alert-warning" role="alert">
+	<strong>Warning.</strong> You have no access to this page.
+	</div>
+';
+}
 	
 } else {
 	echo '
